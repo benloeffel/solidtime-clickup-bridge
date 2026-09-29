@@ -1,0 +1,8 @@
+.output/
+.output-e2e/
+.wxt/
+node_modules/
+package-lock.json
+playwright-report/
+test-results/
+tests/fixtures/

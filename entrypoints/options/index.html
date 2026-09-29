@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Solidtime for ClickUp</title>
+    <meta name="manifest.open_in_tab" content="true" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Solidtime for ClickUp</h1>
+      <p class="lead">
+        Start a Solidtime timer from any ClickUp task. Entries are named <code>Task title | #taskid</code>.
+      </p>
+      <p class="hint">
+        Unofficial community extension, not affiliated with Solidtime or ClickUp. Provided as is, without warranty:
+        please check your tracked time.
+      </p>
+
+      <section>
+        <h2>1. Connect</h2>
+        <label
+          >Solidtime URL
+          <input id="baseUrl" type="url" placeholder="https://time.example.com" required />
+        </label>
+        <label
+          >API token
+          <input
+            id="token"
+            type="password"
+            autocomplete="off"
+            placeholder="Profile settings → Create API token"
+            required
+          />
+        </label>
+        <p class="hint">
+          Self-hosted and <em>Create API Token</em> fails? An admin has to enable API tokens once on the server:
+          <code>docker compose exec scheduler php artisan passport:client --personal --name="API"</code>
+          (press Enter to accept the default <code>users</code> provider).
+        </p>
+        <div class="row">
+          <button id="connect" type="button">Connect</button>
+          <button id="disconnect" type="button" class="secondary">Disconnect</button>
+        </div>
+        <p id="connectStatus" class="status" role="status"></p>
+      </section>
+
+      <section id="trackingSection" hidden>
+        <h2>2. Tracking</h2>
+        <label
+          >Organization
+          <select id="organization"></select>
+        </label>
+        <label
+          >Default project
+          <select id="defaultProject"></select>
+        </label>
+        <label class="check"><input id="billable" type="checkbox" /> Mark new entries as billable</label>
+
+        <h3>Projects</h3>
+        <label class="check"><input id="autoMatch" type="checkbox" /> Match projects automatically by name</label>
+        <p class="hint">
+          Uses the Solidtime project whose name appears in the ClickUp List name (or, failing that, the Space name),
+          e.g. List <code>example.com – Website</code> → project <code>example.com</code>. Whole words only; the longest
+          name wins.
+        </p>
+
+        <h3>Manual mappings</h3>
+        <p class="hint">
+          Optional. These take priority over automatic matching: a List mapping wins over a Space mapping. Anything
+          unmatched uses the default project. Names are matched case-insensitively.
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>ClickUp name</th>
+              <th>Solidtime project</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="mappingRows"></tbody>
+        </table>
+        <button id="addMapping" type="button" class="secondary">Add mapping</button>
+
+        <div class="actions">
+          <button id="save" type="button">Save</button>
+          <p id="saveStatus" class="status" role="status"></p>
+        </div>
+      </section>
+    </main>
+    <template id="mappingRowTemplate">
+      <tr>
+        <td>
+          <select data-field="kind" aria-label="Type">
+            <option value="lists">List</option>
+            <option value="spaces">Space</option>
+          </select>
+        </td>
+        <td><input data-field="name" aria-label="ClickUp name" placeholder="Sprint Backlog" /></td>
+        <td><select data-field="project" aria-label="Solidtime project"></select></td>
+        <td><button type="button" class="remove" aria-label="Remove mapping">✕</button></td>
+      </tr>
+    </template>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
