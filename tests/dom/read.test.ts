@@ -58,6 +58,15 @@ describe("real ClickUp 4 layouts", () => {
     ]);
   });
 
+  it("reads the List from the page header when rows sit in a group without a List name (status groups)", () => {
+    loadFixture("synthetic/list-view-single-list.html", "https://app.clickup.com/9012345/v/l/6-900000000001-1");
+    const rows = findRows();
+    const group = document.createElement("cu-list-group");
+    rows[0]!.parentElement!.insertBefore(group, rows[0]!);
+    rows.forEach((row) => group.appendChild(row));
+    expect(readRowTask(findRows()[0]!)?.location).toEqual({ space: "Agency", list: LIST });
+  });
+
   it("falls back to the page breadcrumbs when the header title is missing", () => {
     loadFixture("synthetic/list-view-single-list.html", "https://app.clickup.com/9012345/v/l/6-900000000001-1");
     document.querySelector('[data-test="location-editable__location-title"]')!.remove();

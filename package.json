@@ -1,7 +1,7 @@
 {
   "name": "solidtime-clickup-bridge",
   "description": "Unofficial browser extension: one-click Solidtime timers from ClickUp tasks",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "license": "MIT",

@@ -73,12 +73,13 @@ export function readRowTask(row: Element): ClickUpTask | null {
   const title = textOf(row, SELECTORS.rowTitle) ?? (collapseWhitespace(link?.textContent ?? "") || null);
   if (!id || !title) return null;
 
-  // Grouped views (Everything, Space) have a header per List; a single List view
-  // has no groups, and the List is the page itself.
+  // Grouped views (Everything, Space) have a header per List. In a single List view
+  // the List is the page itself; its rows may still sit in groups (e.g. per status)
+  // whose headers name no List.
   const group = row.closest(SELECTORS.listGroup);
-  if (!group) return { id, title, location: pageLocation(row.ownerDocument) };
+  const list = group ? textOf(group, SELECTORS.listGroupName) : null;
+  if (!group || !list) return { id, title, location: pageLocation(row.ownerDocument) };
 
-  const list = textOf(group, SELECTORS.listGroupName);
   const path = textOf(group, SELECTORS.listGroupPath);
   const space = path?.split("/")[0]?.trim() || null;
   return { id, title, location: { space, list } };
