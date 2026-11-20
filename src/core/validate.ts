@@ -5,6 +5,7 @@
  */
 import { isValidTaskId, uniqueTaskIds } from "./taskId";
 import { collapseWhitespace, truncate } from "./text";
+import type { TaskLocation } from "./projectResolver";
 import type { ClickUpTask } from "./timerToggle";
 
 /** Solidtime rejects descriptions longer than 5000 characters. */
@@ -24,6 +25,15 @@ function cleanText(value: unknown, max: number): string | null {
   return text ? truncate(text, max) : null;
 }
 
+function cleanLocation(loc: Record<string, unknown>): TaskLocation {
+  const folder = cleanText(loc.folder, MAX_NAME_LENGTH);
+  return {
+    space: cleanText(loc.space, MAX_NAME_LENGTH),
+    ...(folder ? { folder } : {}),
+    list: cleanText(loc.list, MAX_NAME_LENGTH),
+  };
+}
+
 /** Returns a sanitised copy of a task received from a content script, or null if it is malformed. */
 export function sanitizeTask(input: unknown): ClickUpTask | null {
   if (typeof input !== "object" || input === null) return null;
@@ -37,7 +47,7 @@ export function sanitizeTask(input: unknown): ClickUpTask | null {
     id,
     title: cleanTitle,
     ...(otherIds.length ? { aliases: otherIds } : {}),
-    location: { space: cleanText(loc.space, MAX_NAME_LENGTH), list: cleanText(loc.list, MAX_NAME_LENGTH) },
+    location: cleanLocation(loc),
   };
 }
 

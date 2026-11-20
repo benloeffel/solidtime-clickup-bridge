@@ -9,7 +9,7 @@ describe("readDetailTask", () => {
     expect(readDetailTask()).toEqual({
       id: "86c1aaaaa",
       title: "Fix login redirect loop",
-      location: { space: "Engineering", list: "Sprint Backlog" },
+      location: { space: "Engineering", folder: "Web App", list: "Sprint Backlog" },
     });
   });
 
@@ -40,8 +40,16 @@ describe("readRowTask", () => {
     loadFixture("synthetic/list-only.html");
     const tasks = findRows().map(readRowTask);
     expect(tasks).toEqual([
-      { id: "86c1aaaaa", title: "Fix login redirect loop", location: { space: "Engineering", list: "Sprint Backlog" } },
-      { id: "86c1bbbbb", title: "Write | tricky #title", location: { space: "Engineering", list: "Sprint Backlog" } },
+      {
+        id: "86c1aaaaa",
+        title: "Fix login redirect loop",
+        location: { space: "Engineering", folder: "Web App", list: "Sprint Backlog" },
+      },
+      {
+        id: "86c1bbbbb",
+        title: "Write | tricky #title",
+        location: { space: "Engineering", folder: "Web App", list: "Sprint Backlog" },
+      },
       null,
     ]);
   });

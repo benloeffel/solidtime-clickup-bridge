@@ -94,9 +94,11 @@ export default defineBackground(() => {
     if (project.source !== "none" || !settings.autoMatch) return undefined;
     if (!projectsLoaded) return "Timer started without a project: the Solidtime project list could not be loaded.";
     const list = task.location?.list;
-    return list
-      ? `Timer started without a project: no Solidtime project name appears in the List "${list}".`
-      : "Timer started without a project: the ClickUp List name could not be read on this page.";
+    const folder = task.location?.folder;
+    if (!list) return "Timer started without a project: the ClickUp List name could not be read on this page.";
+    return folder
+      ? `Timer started without a project: no Solidtime project name appears in the List "${list}" or the Folder "${folder}".`
+      : `Timer started without a project: no Solidtime project name appears in the List "${list}".`;
   }
 
   /** Only our own content scripts on ClickUp and our own extension pages may talk to us. */

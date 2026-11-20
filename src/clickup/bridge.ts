@@ -55,7 +55,7 @@ export function createBridge(doc: Document, onToggle: ToggleHandler, options: Br
     tasks.set(host, { task, read });
     host.setAttribute("data-task-id", task.id);
     renderButtonState(host, stateFor(task));
-    setButtonContext(host, task.location?.list);
+    setButtonContext(host, task.location);
   }
 
   function newHost(variant: ButtonVariant) {

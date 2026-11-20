@@ -158,3 +158,50 @@ describe("resolveProject reports which rule applied", () => {
     });
   });
 });
+
+describe("Folders", () => {
+  const projects = [
+    { id: "p-acme", name: "Acme" },
+    { id: "p-clients", name: "Clients" },
+  ];
+  const location = { space: "Clients", folder: "Acme", list: "Bugs" };
+  const none: ProjectMapping = { lists: {}, spaces: {}, defaultProjectId: null };
+
+  it("matches the Folder name before the Space name", () => {
+    expect(resolveProject(location, none, projects)).toEqual({ source: "folder-name", projectId: "p-acme" });
+  });
+
+  it("still prefers a List name match", () => {
+    expect(resolveProject({ ...location, list: "Acme Clients" }, none, [{ id: "p-l", name: "Acme Clients" }])).toEqual({
+      source: "list-name",
+      projectId: "p-l",
+    });
+  });
+
+  it("orders mappings List → Folder → Space", () => {
+    const mapping: ProjectMapping = {
+      lists: { Bugs: "p-list" },
+      folders: { acme: "p-folder" },
+      spaces: { Clients: "p-space" },
+      defaultProjectId: null,
+    };
+    expect(resolveProject(location, mapping).source).toBe("list-mapping");
+    expect(resolveProject({ ...location, list: "Other" }, mapping)).toEqual({
+      source: "folder-mapping",
+      projectId: "p-folder",
+    });
+    expect(resolveProject({ ...location, list: "Other", folder: "Other" }, mapping).source).toBe("space-mapping");
+  });
+
+  it("lets a Folder mapping win over automatic matches", () => {
+    const mapping: ProjectMapping = { ...none, folders: { Acme: "p-manual" } };
+    expect(resolveProject(location, mapping, projects)).toEqual({ source: "folder-mapping", projectId: "p-manual" });
+  });
+
+  it("works with settings saved before Folder support (no folders key)", () => {
+    expect(resolveProject(location, { lists: {}, spaces: {}, defaultProjectId: "p-d" })).toEqual({
+      source: "default",
+      projectId: "p-d",
+    });
+  });
+});

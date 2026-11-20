@@ -62,7 +62,9 @@ function warnAboutMissingProjects() {
   }
 }
 
-function addMappingRow(kind: keyof Omit<ProjectMapping, "defaultProjectId">, name: string, projectId: string) {
+type MappingKind = "lists" | "folders" | "spaces";
+
+function addMappingRow(kind: MappingKind, name: string, projectId: string) {
   const row = rowTemplate.content.firstElementChild!.cloneNode(true) as HTMLTableRowElement;
   row.querySelector<HTMLSelectElement>('[data-field="kind"]')!.value = kind;
   row.querySelector<HTMLInputElement>('[data-field="name"]')!.value = name;
@@ -73,18 +75,20 @@ function addMappingRow(kind: keyof Omit<ProjectMapping, "defaultProjectId">, nam
 
 function renderMappings() {
   mappingRows.replaceChildren();
-  for (const [name, projectId] of Object.entries(settings.mapping.lists)) addMappingRow("lists", name, projectId);
-  for (const [name, projectId] of Object.entries(settings.mapping.spaces)) addMappingRow("spaces", name, projectId);
+  for (const kind of ["lists", "folders", "spaces"] as const) {
+    for (const [name, projectId] of Object.entries(settings.mapping[kind] ?? {})) addMappingRow(kind, name, projectId);
+  }
 }
 
 function readForm(): Settings {
-  const mapping: ProjectMapping = {
+  const mapping: Required<ProjectMapping> = {
     lists: {},
+    folders: {},
     spaces: {},
     defaultProjectId: projectExists(defaultProjectSelect.value) ? defaultProjectSelect.value : null,
   };
   for (const row of Array.from(mappingRows.rows)) {
-    const kind = row.querySelector<HTMLSelectElement>('[data-field="kind"]')!.value as "lists" | "spaces";
+    const kind = row.querySelector<HTMLSelectElement>('[data-field="kind"]')!.value as MappingKind;
     const name = row.querySelector<HTMLInputElement>('[data-field="name"]')!.value.trim().slice(0, MAX_NAME_LENGTH);
     const projectId = row.querySelector<HTMLSelectElement>('[data-field="project"]')!.value;
     // Only ids that exist in the organization; Object.hasOwn guards against "__proto__"-style names.
@@ -168,7 +172,7 @@ organizationSelect.addEventListener("change", async () => {
     organizationSelect.value = settings.organizationId;
     return;
   }
-  settings = { ...readForm(), mapping: { lists: {}, spaces: {}, defaultProjectId: null } };
+  settings = { ...readForm(), mapping: { lists: {}, folders: {}, spaces: {}, defaultProjectId: null } };
   try {
     await loadProjects();
   } catch (error) {
