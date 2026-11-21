@@ -1,6 +1,8 @@
 export interface ProjectMapping {
   /** ClickUp List name → Solidtime project id */
   lists: Record<string, string>;
+  /** ClickUp Folder name → Solidtime project id (optional: settings saved before Folder support lack it) */
+  folders?: Record<string, string>;
   /** ClickUp Space name → Solidtime project id */
   spaces: Record<string, string>;
   defaultProjectId: string | null;
@@ -8,6 +10,8 @@ export interface ProjectMapping {
 
 export interface TaskLocation {
   space?: string | null;
+  /** The Folder the List sits in; absent for Lists directly in a Space. */
+  folder?: string | null;
   list?: string | null;
 }
 
@@ -17,7 +21,8 @@ export interface NamedProject {
 }
 
 /** Which rule chose the project (or that none applied). */
-export type ProjectSource = "list-mapping" | "space-mapping" | "list-name" | "space-name" | "default" | "none";
+export type ProjectSource =
+  "list-mapping" | "folder-mapping" | "space-mapping" | "list-name" | "folder-name" | "space-name" | "default" | "none";
 
 export interface ProjectResolution {
   projectId: string | null;
@@ -70,7 +75,7 @@ export function matchProjectByName(name: string | null | undefined, projects: re
 
 /**
  * First match wins:
- * List mapping → Space mapping → auto-match in List name → auto-match in Space name → default.
+ * List mapping → Folder mapping → Space mapping → auto-match in List name → Folder name → Space name → default.
  *
  * @param autoMatchProjects projects to match by name; empty when automatic matching is off.
  */
@@ -81,8 +86,10 @@ export function resolveProject(
 ): ProjectResolution {
   const rules: [ProjectSource, () => string | null][] = [
     ["list-mapping", () => lookup(mapping.lists, location.list)],
+    ["folder-mapping", () => lookup(mapping.folders ?? {}, location.folder)],
     ["space-mapping", () => lookup(mapping.spaces, location.space)],
     ["list-name", () => matchProjectByName(location.list, autoMatchProjects)],
+    ["folder-name", () => matchProjectByName(location.folder, autoMatchProjects)],
     ["space-name", () => matchProjectByName(location.space, autoMatchProjects)],
     ["default", () => mapping.defaultProjectId],
   ];
@@ -95,5 +102,5 @@ export function resolveProject(
 
 /** True when name-based matching finds a project for this location. */
 export function hasNameMatch(location: TaskLocation, projects: readonly NamedProject[]): boolean {
-  return matchProjectByName(location.list, projects) !== null || matchProjectByName(location.space, projects) !== null;
+  return [location.list, location.folder, location.space].some((name) => matchProjectByName(name, projects) !== null);
 }

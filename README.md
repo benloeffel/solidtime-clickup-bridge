@@ -11,7 +11,7 @@ Title of an awesome task | #86c1abcde
 - **Task view** (modal, side panel or full page): the button sits in the task header.
 - **List view**: a play button shows on each row when you hover over it.
 - **One click switches tasks.** If another timer is running (including one started in the Solidtime desktop app or web UI), it is stopped and the new one starts. Clicking the task that is already being tracked stops it.
-- **Projects are picked automatically:** if a Solidtime project's name appears in the ClickUp List name (or the Space name), that project is used. Manual List/Space mappings and a default project are available when names don't line up (see [Projects](#projects)).
+- **Projects are picked automatically:** if a Solidtime project's name appears in the ClickUp List name (or the Folder or Space name), that project is used. Manual List/Folder/Space mappings and a default project are available when names don't line up (see [Projects](#projects)).
 - Custom task IDs (e.g. `#DEV-42`) are used when your workspace has them enabled.
 
 The extension has no runtime dependencies, and the built extension is about 30 kB. It has no analytics. It talks only to ClickUp (to read the page) and to the Solidtime URL you configure. See [SECURITY.md](SECURITY.md) for the security model: how the token is protected, which permissions it uses, and what is sent where.
@@ -51,10 +51,14 @@ npm run build:firefox    # → .output/firefox-mv3
 The project for a new entry is chosen in this order, and the first match wins:
 
 1. A **manual List mapping** (options page)
-2. A **manual Space mapping**
-3. **Automatic match on the List name:** the Solidtime project whose name appears in the ClickUp List name
-4. **Automatic match on the Space name**
-5. The **default project**, or no project
+2. A **manual Folder mapping**
+3. A **manual Space mapping**
+4. **Automatic match on the List name:** the Solidtime project whose name appears in the ClickUp List name
+5. **Automatic match on the Folder name** (useful when each client or project is a Folder and its Lists have generic names like "Bugs")
+6. **Automatic match on the Space name**
+7. The **default project**, or no project
+
+The button's tooltip shows the Folder and List it read, e.g. `Start timer in Solidtime · Folder: Acme · List: Bugs`.
 
 Automatic matching is on by default and ignores case. It matches whole words and whole domains only:
 

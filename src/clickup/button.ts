@@ -1,3 +1,5 @@
+import type { TaskLocation } from "../core/projectResolver";
+
 export type ButtonVariant = "detail" | "row";
 export type ButtonState = "idle" | "running" | "busy";
 
@@ -77,11 +79,12 @@ export function renderButtonState(host: HTMLElement, state: ButtonState): void {
 }
 
 /**
- * Tooltip = action + the ClickUp List the task was read from, so users can see
- * which name project matching will use (e.g. "Start timer in Solidtime · List: acme.com").
+ * Tooltip = action + the ClickUp Folder/List the task was read from, so users can see
+ * which names project matching will use (e.g. "Start timer in Solidtime · Folder: Acme · List: Bugs").
  */
-export function setButtonContext(host: HTMLElement, list: string | null | undefined): void {
-  const context = list ? `List: ${list}` : "";
+export function setButtonContext(host: HTMLElement, location: TaskLocation | undefined): void {
+  const parts = [location?.folder && `Folder: ${location.folder}`, location?.list && `List: ${location.list}`];
+  const context = parts.filter(Boolean).join(" · ");
   if ((host.dataset.context ?? "") === context) return;
   host.dataset.context = context;
   renderTooltip(host);

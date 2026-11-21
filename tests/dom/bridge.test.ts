@@ -72,7 +72,7 @@ describe("createBridge", () => {
     expect(onToggle).toHaveBeenCalledWith({
       id: "86c1aaaaa",
       title: "Fix login redirect loop",
-      location: { space: "Engineering", list: "Sprint Backlog" },
+      location: { space: "Engineering", folder: "Web App", list: "Sprint Backlog" },
     });
     expect(host.dataset.state).toBe("busy");
     host.click(); // ignored while busy

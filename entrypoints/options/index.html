@@ -61,15 +61,15 @@
         <h3>Projects</h3>
         <label class="check"><input id="autoMatch" type="checkbox" /> Match projects automatically by name</label>
         <p class="hint">
-          Uses the Solidtime project whose name appears in the ClickUp List name (or, failing that, the Space name),
-          e.g. List <code>example.com – Website</code> → project <code>example.com</code>. Whole words only; the longest
-          name wins.
+          Uses the Solidtime project whose name appears in the ClickUp List name (or, failing that, the Folder name,
+          then the Space name), e.g. List <code>example.com – Website</code> → project <code>example.com</code>. Whole
+          words only; the longest name wins.
         </p>
 
         <h3>Manual mappings</h3>
         <p class="hint">
-          Optional. These take priority over automatic matching: a List mapping wins over a Space mapping. Anything
-          unmatched uses the default project. Names are matched case-insensitively.
+          Optional. These take priority over automatic matching: a List mapping wins over a Folder mapping, which wins
+          over a Space mapping. Anything unmatched uses the default project. Names are matched case-insensitively.
         </p>
         <table>
           <thead>
@@ -95,6 +95,7 @@
         <td>
           <select data-field="kind" aria-label="Type">
             <option value="lists">List</option>
+            <option value="folders">Folder</option>
             <option value="spaces">Space</option>
           </select>
         </td>

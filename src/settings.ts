@@ -9,7 +9,7 @@ export interface Settings {
   organizationId: string;
   memberId: string;
   billable: boolean;
-  /** Pick the Solidtime project whose name appears in the ClickUp List/Space name. */
+  /** Pick the Solidtime project whose name appears in the ClickUp List/Folder/Space name. */
   autoMatch: boolean;
   mapping: ProjectMapping;
 }
@@ -21,7 +21,7 @@ export const DEFAULT_SETTINGS: Settings = {
   memberId: "",
   billable: false,
   autoMatch: true,
-  mapping: { lists: {}, spaces: {}, defaultProjectId: null },
+  mapping: { lists: {}, folders: {}, spaces: {}, defaultProjectId: null },
 };
 
 const KEY = "settings";

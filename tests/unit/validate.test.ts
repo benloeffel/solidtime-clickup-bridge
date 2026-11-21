@@ -47,6 +47,16 @@ describe("sanitizeTask", () => {
     });
   });
 
+  it("keeps a Folder and drops an empty or malformed one", () => {
+    expect(
+      sanitizeTask({ id: "a1", title: "t", location: { space: "S", folder: " Acme ", list: "L" } })?.location,
+    ).toEqual({ space: "S", folder: "Acme", list: "L" });
+    expect(sanitizeTask({ id: "a1", title: "t", location: { folder: "  " } })?.location).not.toHaveProperty("folder");
+    expect(sanitizeTask({ id: "a1", title: "t", location: { folder: { evil: 1 } } })?.location).not.toHaveProperty(
+      "folder",
+    );
+  });
+
   it("strips control and bidi-override characters", () => {
     expect(sanitizeTask({ id: "a1", title: "Fix\u0000 bug‮\n\ttoday" })?.title).toBe("Fix bug today");
   });
